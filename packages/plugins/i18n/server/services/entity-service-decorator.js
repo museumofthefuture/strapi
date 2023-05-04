@@ -2,7 +2,6 @@
 
 const { has, get, omit, isArray } = require('lodash/fp');
 const { ApplicationError } = require('@strapi/utils').errors;
-const { transformParamsToQuery } = require('@strapi/utils').convertQueryParams;
 
 const { getService } = require('../utils');
 
@@ -96,7 +95,7 @@ const decorator = (service) => ({
       return wrappedParams;
     }
 
-    return wrapParams(params, ctx);
+    return wrapParams(wrappedParams, ctx);
   },
 
   /**
@@ -167,18 +166,14 @@ const decorator = (service) => ({
 
     const { kind } = strapi.getModel(uid);
 
-    const wrappedParams = await this.wrapParams(opts, { uid, action: 'findMany' });
-
-    const query = transformParamsToQuery(uid, wrappedParams);
-
     if (kind === 'singleType') {
       if (opts[LOCALE_QUERY_FILTER] === 'all') {
-        return strapi.db.query(uid).findMany(query);
+        return service.findMany.call(this, uid, { ...opts, ignoreKind: true });
       }
-      return strapi.db.query(uid).findOne(query);
+      return service.findMany.call(this, uid, opts);
     }
 
-    return strapi.db.query(uid).findMany(query);
+    return service.findMany.call(this, uid, opts);
   },
 });
 

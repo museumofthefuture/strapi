@@ -75,14 +75,14 @@ const createDefaultImplementation = ({ strapi, db, eventHub, entityValidator }) 
     });
   },
 
-  async findMany(uid, opts) {
+  async findMany(uid, opts = {}) {
     const { kind } = strapi.getModel(uid);
 
     const wrappedParams = await this.wrapParams(opts, { uid, action: 'findMany' });
 
     const query = transformParamsToQuery(uid, wrappedParams);
 
-    if (kind === 'singleType') {
+    if (kind === 'singleType' && !opts.ignoreKind) {
       return db.query(uid).findOne(query);
     }
 
