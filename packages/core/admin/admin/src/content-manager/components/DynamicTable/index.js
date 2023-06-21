@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 
 import { DynamicTable as Table, useStrapiApp } from '@strapi/helper-plugin';
-import getReviewWorkflowsColumn from 'ee_else_ce/content-manager/components/DynamicTable/CellContent/ReviewWorkflowsStage/getTableColumn';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 
 import { INJECT_COLUMN_IN_TABLE } from '../../../exposedHooks';
+import { useEnterprise } from '../../../hooks/useEnterprise';
 import { selectDisplayedHeaders } from '../../pages/ListView/selectors';
 import { getTrad } from '../../utils';
 
@@ -14,6 +14,8 @@ import BulkActionsBar from './BulkActionsBar';
 import { PublicationState } from './CellContent/PublicationState/PublicationState';
 import ConfirmDialogDelete from './ConfirmDialogDelete';
 import TableRows from './TableRows';
+
+const REVIEW_WORKFLOW_COLUMNS_CE = null;
 
 const DynamicTable = ({
   canCreate,
@@ -34,6 +36,36 @@ const DynamicTable = ({
   const hasDraftAndPublish = layout.contentType.options?.draftAndPublish ?? false;
   const { formatMessage } = useIntl();
   const displayedHeaders = useSelector(selectDisplayedHeaders);
+  const reviewWorkflowColumns = useEnterprise(
+    REVIEW_WORKFLOW_COLUMNS_CE,
+    async () =>
+      (
+        await import(
+          '../../../../../ee/admin/content-manager/components/DynamicTable/CellContent/ReviewWorkflowsStage/constants'
+        )
+      ).REVIEW_WORKFLOW_COLUMNS_EE,
+    {
+      combine(ceColumns, eeColumns) {
+        return {
+          ...eeColumns,
+          metadatas: {
+            ...eeColumns.metadatas,
+            // `label` is a plain object that we need to translate
+            label: formatMessage(eeColumns.metadatas.label),
+          },
+        };
+      },
+
+      // TODO: As soon as the feature was enabled in EE mode, the BE currently does not have a way to send
+      // `false` once a user is in CE mode again. We shouldn't have to perform the window.strapi.isEE check here
+      // and it is meant to be in interim solution until we find a better one.
+
+      enabled:
+        (window.strapi.features.isEnabled(window.strapi.features.REVIEW_WORKFLOWS) &&
+          layout.contentType.options?.reviewWorkflows) ??
+        false,
+    }
+  );
 
   const tableHeaders = useMemo(() => {
     const headers = runHookWaterfall(INJECT_COLUMN_IN_TABLE, {
@@ -78,19 +110,23 @@ const DynamicTable = ({
       });
     }
 
-    // this should not exist. Ideally we would use registerHook() similar to what has been done
+    // This should not exist. Ideally we would use registerHook() similar to what has been done
     // in the i18n plugin. In order to do that review-workflows should have been a plugin. In
     // a future iteration we need to find a better pattern.
 
-    // In CE this will return null - in EE a column definition including the custom formatting component.
-    const reviewWorkflowColumn = getReviewWorkflowsColumn(layout);
-
-    if (reviewWorkflowColumn) {
-      formattedHeaders.push(reviewWorkflowColumn);
+    if (reviewWorkflowColumns) {
+      formattedHeaders.push(reviewWorkflowColumns);
     }
 
     return formattedHeaders;
-  }, [runHookWaterfall, displayedHeaders, layout, hasDraftAndPublish, formatMessage]);
+  }, [
+    runHookWaterfall,
+    displayedHeaders,
+    layout,
+    hasDraftAndPublish,
+    reviewWorkflowColumns,
+    formatMessage,
+  ]);
 
   return (
     <Table
