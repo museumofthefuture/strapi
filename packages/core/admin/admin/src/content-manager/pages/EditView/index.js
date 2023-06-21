@@ -9,7 +9,6 @@ import {
   useTracking,
 } from '@strapi/helper-plugin';
 import { Layer, Pencil } from '@strapi/icons';
-import InformationBox from 'ee_else_ce/content-manager/pages/EditView/InformationBox';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -29,6 +28,7 @@ import DraftAndPublishBadge from './DraftAndPublishBadge';
 import GridRow from './GridRow';
 import Header from './Header';
 import { useOnce } from './hooks/useOnce';
+import InformationBox from './InformationBox';
 import { selectCurrentLayout, selectAttributesLayout, selectCustomFieldUids } from './selectors';
 import { getFieldsActionMatchingPermissions } from './utils';
 

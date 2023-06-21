@@ -12,8 +12,6 @@ import {
   useNotification,
   useRBAC,
 } from '@strapi/helper-plugin';
-import useLicenseLimitNotification from 'ee_else_ce/hooks/useLicenseLimitNotification';
-import CreateAction from 'ee_else_ce/pages/SettingsPage/pages/Users/ListPage/CreateAction';
 import qs from 'qs';
 import { useIntl } from 'react-intl';
 import { useMutation, useQueryClient } from 'react-query';
@@ -24,6 +22,7 @@ import { useAdminUsers } from '../../../../../hooks/useAdminUsers';
 import { selectAdminPermissions } from '../../../../App/selectors';
 import Filters from '../../../components/Filters';
 
+import CreateAction from './CreateAction';
 import TableRows from './DynamicTable/TableRows';
 import ModalForm from './ModalForm';
 import PaginationFooter from './PaginationFooter';

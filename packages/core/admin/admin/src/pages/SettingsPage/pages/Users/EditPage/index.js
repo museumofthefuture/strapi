@@ -24,7 +24,6 @@ import {
   useOverlayBlocker,
 } from '@strapi/helper-plugin';
 import { ArrowLeft, Check } from '@strapi/icons';
-import MagicLink from 'ee_else_ce/pages/SettingsPage/pages/Users/components/MagicLink';
 import { Formik } from 'formik';
 import get from 'lodash/get';
 import omit from 'lodash/omit';
@@ -35,6 +34,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { useAdminUsers } from '../../../../../hooks/useAdminUsers';
 import { formatAPIErrors, getFullName } from '../../../../../utils';
+import MagicLink from '../components/MagicLink';
 import SelectRoles from '../components/SelectRoles';
 import { editValidation } from '../utils/validations/users';
 

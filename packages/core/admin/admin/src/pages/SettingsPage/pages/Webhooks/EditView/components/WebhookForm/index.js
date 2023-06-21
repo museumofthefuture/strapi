@@ -12,11 +12,11 @@ import {
 } from '@strapi/design-system';
 import { Form, Link } from '@strapi/helper-plugin';
 import { ArrowLeft, Check, Play as Publish } from '@strapi/icons';
-import EventTable from 'ee_else_ce/pages/SettingsPage/pages/Webhooks/EditView/components/EventTable';
 import { Field, FormikProvider, useFormik } from 'formik';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
+import EventTable from '../EventTable';
 import HeadersInput from '../HeadersInput';
 import TriggerContainer from '../TriggerContainer';
 

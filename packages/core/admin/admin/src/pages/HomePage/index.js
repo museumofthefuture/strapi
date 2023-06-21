@@ -7,7 +7,6 @@ import React, { memo, useMemo } from 'react';
 
 import { Box, Grid, GridItem, Layout, Main } from '@strapi/design-system';
 import { LoadingIndicatorPage, useGuidedTour } from '@strapi/helper-plugin';
-import useLicenseLimitNotification from 'ee_else_ce/hooks/useLicenseLimitNotification';
 import { Helmet } from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -16,6 +15,7 @@ import styled from 'styled-components';
 import GuidedTourHomepage from '../../components/GuidedTour/Homepage';
 import isGuidedTourCompleted from '../../components/GuidedTour/utils/isGuidedTourCompleted';
 import { useContentTypes } from '../../hooks/useContentTypes';
+import useLicenseLimitNotification from '../../hooks/useLicenseLimitNotification';
 
 import cornerOrnamentPath from './assets/corner-ornament.svg';
 import ContentBlocks from './ContentBlocks';

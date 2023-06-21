@@ -22,7 +22,6 @@ import {
   useTracking,
 } from '@strapi/helper-plugin';
 import { Check, ExternalLink } from '@strapi/icons';
-import AdminSeatInfo from 'ee_else_ce/pages/SettingsPage/pages/ApplicationInfosPage/components/AdminSeatInfo';
 import { useIntl } from 'react-intl';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useSelector } from 'react-redux';
@@ -30,6 +29,7 @@ import { useSelector } from 'react-redux';
 import { useConfigurations } from '../../../../hooks';
 import { selectAdminPermissions } from '../../../App/selectors';
 
+import AdminSeatInfo from './components/AdminSeatInfo';
 import CustomizationInfos from './components/CustomizationInfos';
 import { fetchProjectSettings, postProjectSettings } from './utils/api';
 import getFormData from './utils/getFormData';
