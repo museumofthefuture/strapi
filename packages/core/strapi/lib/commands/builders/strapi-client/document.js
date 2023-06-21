@@ -47,7 +47,7 @@ const getDocumentHTML = ({ props }) => {
   </head>
   <body>
     <div id="app" />
-    ${props.isVite ? `<script type="module" src="${props.entryPath}" />` : ''}
+    ${props.isVite ? `<script type="module" src="${props.entryPath}"></script>` : ''}
   </body>
 </html>`;
 
