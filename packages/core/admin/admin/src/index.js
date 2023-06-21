@@ -30,7 +30,7 @@ const reducers = Reducers({ appReducers });
 
 const MOUNT_NODE = document.getElementById('app');
 
-const run = async () => {
+const renderAdmin = async () => {
   const { get } = getFetchClient();
   try {
     const {
@@ -73,4 +73,4 @@ const run = async () => {
   root.render(app.render());
 };
 
-run();
+export { renderAdmin };
