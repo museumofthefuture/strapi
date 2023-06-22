@@ -90,7 +90,7 @@ const buildAdmin = async ({ distDir, cwd, builder, tsconfig }) => {
          */
         esbuild: {
           loader: 'jsx',
-          include: /src\/.*\.jsx?$/,
+          include: /.*\.jsx?$/,
           exclude: [],
         },
         plugins: [viteReact(), nodeResolve()],
