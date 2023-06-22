@@ -33,8 +33,10 @@ import { Pencil, Plus, Trash } from '@strapi/icons';
 import { useReviewWorkflows } from '../../hooks/useReviewWorkflows';
 import adminPermissions from '../../../../../../../../admin/src/permissions';
 import { useContentTypes } from '../../../../../../../../admin/src/hooks/useContentTypes';
+import { useLicenseLimits } from '../../../../../../hooks';
 
 import * as Layout from '../../components/Layout';
+import * as LimitsModal from '../../components/LimitsModal';
 
 const ActionLink = styled(Link)`
   align-items: center;
@@ -69,9 +71,11 @@ export function ReviewWorkflowsListView() {
   const { collectionTypes, singleTypes, isLoading: isLoadingModels } = useContentTypes();
   const { workflows, isLoading, refetch } = useReviewWorkflows();
   const [workflowToDelete, setWorkflowToDelete] = React.useState(null);
+  const [showLimitModal, setShowLimitModal] = React.useState(false);
   const { del } = useFetchClient();
   const { formatAPIError } = useAPIErrorHandler();
   const toggleNotification = useNotification();
+  const { license } = useLicenseLimits();
 
   const { mutateAsync, isLoading: isLoadingMutation } = useMutation(
     async ({ workflowId, stages }) => {
@@ -131,7 +135,17 @@ export function ReviewWorkflowsListView() {
     <CheckPagePermissions permissions={adminPermissions.settings['review-workflows'].main}>
       <Layout.Header
         primaryAction={
-          <LinkButton startIcon={<Plus />} size="S" to="/settings/review-workflows/create">
+          <LinkButton
+            startIcon={<Plus />}
+            size="S"
+            to="/settings/review-workflows/create"
+            onClick={(event) => {
+              if (workflows.length >= license.data.workflows) {
+                event.preventDefault();
+                setShowLimitModal(true);
+              }
+            }}
+          >
             {formatMessage({
               id: 'Settings.review-workflows.list.page.create',
               defaultMessage: 'Create new workflow',
@@ -160,9 +174,18 @@ export function ReviewWorkflowsListView() {
         ) : (
           <Table
             colCount={3}
-            // TODO: we should be able to use a link here instead of an (inaccessible onClick) handler
             footer={
-              <TFooter icon={<Plus />} onClick={() => push('/settings/review-workflows/create')}>
+              // TODO: we should be able to use a link here instead of an (inaccessible onClick) handler
+              <TFooter
+                icon={<Plus />}
+                onClick={() => {
+                  if (workflows.length < license.data.workflows) {
+                    push('/settings/review-workflows/create');
+                  } else {
+                    setShowLimitModal(true);
+                  }
+                }}
+              >
                 {formatMessage({
                   id: 'Settings.review-workflows.list.page.create',
                   defaultMessage: 'Create new workflow',
@@ -285,6 +308,23 @@ export function ReviewWorkflowsListView() {
           onToggleDialog={toggleConfirmDeleteDialog}
           onConfirm={handleConfirmDeleteDialog}
         />
+
+        <LimitsModal.Root isOpen={showLimitModal} onClose={() => setShowLimitModal(false)}>
+          <LimitsModal.Title>
+            {formatMessage({
+              id: 'Settings.review-workflows.list.page.workflows.limit.title',
+              defaultMessage: 'You have reached the limit',
+            })}
+          </LimitsModal.Title>
+
+          <LimitsModal.Body>
+            {formatMessage({
+              id: 'Settings.review-workflows.list.page.workflows.limit.body',
+              defaultMessage:
+                'Unlock the full power of Strapi by upgrading your plan to the Enterprise Edition',
+            })}
+          </LimitsModal.Body>
+        </LimitsModal.Root>
       </Layout.Root>
     </CheckPagePermissions>
   );
