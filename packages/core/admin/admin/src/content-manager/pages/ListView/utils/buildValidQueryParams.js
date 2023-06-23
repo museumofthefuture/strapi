@@ -1,18 +1,14 @@
 import set from 'lodash/set';
-import { stringify } from 'qs';
 
 import createPluginsFilter from './createPluginsFilter';
-/**
- * TODO: To be replaced by buildValidQueryParams for singletypes
- */
 
 /**
- * Creates a valid query string from an object of queryParams
+ * Creates a valid query params object
  * This includes:
  * - a filters clause
  * - plugin options
  */
-const buildQueryString = (queryParams = {}) => {
+const buildValidQueryParams = (queryParams = {}) => {
   /**
    * Extracting pluginOptions from the query since we don't want them to be part
    * of the url
@@ -30,10 +26,7 @@ const buildQueryString = (queryParams = {}) => {
     set(otherQueryParams, `_q`, encodeURIComponent(query));
   }
 
-  return `${stringify(otherQueryParams, {
-    encode: false,
-    addQueryPrefix: true,
-  })}`;
+  return otherQueryParams;
 };
 
-export default buildQueryString;
+export default buildValidQueryParams;
