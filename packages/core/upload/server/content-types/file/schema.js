@@ -101,6 +101,14 @@ module.exports = {
       private: true,
       searchable: false,
     },
+    collectionName: {
+      type: 'string',
+      configurable: false,
+    },
+    collectionField: {
+      type: 'string',
+      configurable: false,
+    },
   },
   // experimental feature:
   indexes: [
@@ -136,3 +144,4 @@ module.exports = {
     },
   ],
 };
+
