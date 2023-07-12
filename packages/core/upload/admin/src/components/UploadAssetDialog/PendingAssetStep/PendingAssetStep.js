@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import {
   Button,
@@ -10,7 +10,11 @@ import {
   ModalFooter,
   ModalHeader,
   Typography,
+  Select,
+  Option
 } from '@strapi/design-system';
+
+import axios from 'axios'
 import { useTracking } from '@strapi/helper-plugin';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -20,11 +24,86 @@ import getTrad from '../../../utils/getTrad';
 import { AssetCard } from '../../AssetCard/AssetCard';
 import { UploadingAssetCard } from '../../AssetCard/UploadingAssetCard';
 
+const getBaseUrl = () => {
+  return `${window.location.protocol}//${window.location.host}/`;
+};
+
+const strapiServerUrl = getBaseUrl();
+
+const UploadCollectionName = ({ value, setValue, setCollectionFields }) => {
+const [collectionNames, setCollectionNames] = useState([]);
+
+  useEffect(() => {
+    axios
+    .get(`${strapiServerUrl}api/content-type-builder/content-types`)
+      .then((response) => {
+        const names = response.data.data.map((item) => item.apiID);
+        setCollectionNames(names);
+        setValue(names[0]); // set the first name as the initial selected value
+        setCollectionFields(Object.keys(response.data.data[0].schema.attributes));
+      })
+      .catch((error) => console.error(error));
+  }, []);
+
+  return (
+    <Select
+      label="Select Collection Name"
+      value={value}
+      onChange={(newValue) => setValue(newValue)}
+    >
+      {collectionNames.map((name) => (
+        <Option key={name} value={name}>
+          {name}
+        </Option>
+      ))}
+    </Select>
+  );
+};
+
+  const UploadCollectionField = ({ value, setValue, collectionName }) => {
+  const [collectionFields, setCollectionFields] = useState([]);
+
+  useEffect(() => {
+    if (collectionName) {
+      axios
+        .get(`${strapiServerUrl}api/content-type-builder/content-types`)
+        .then((response) => {
+          const selectedItem = response.data.data.find(
+            (item) => item.apiID === collectionName
+          );
+          if (selectedItem) {
+            const fields = Object.keys(selectedItem.schema.attributes);
+            setCollectionFields(fields);
+            setValue(fields[0]); // set the first field as the initial selected value
+          }
+        })
+        .catch((error) => console.error(error));
+    }
+  }, [collectionName]);
+
+  return (
+    <Select
+      label="Select Collection Field"
+      value={value}
+      onChange={(newValue) => setValue(newValue)}
+    >
+      {collectionFields.map((field) => (
+        <Option key={field} value={field}>
+          {field}
+        </Option>
+      ))}
+    </Select>
+  );
+};
+
 const Status = {
   Idle: 'IDLE',
   Uploading: 'UPLOADING',
   Intermediate: 'INTERMEDIATE',
 };
+
+const CollectionName = []; // Add more collection names here as needed
+const CollectionField = []; // Add more collection fields here as needed
 
 export const PendingAssetStep = ({
   addUploadedFiles,
@@ -42,6 +121,11 @@ export const PendingAssetStep = ({
   const { formatMessage } = useIntl();
   const { trackUsage } = useTracking();
   const [uploadStatus, setUploadStatus] = useState(Status.Idle);
+
+
+  // Replace your existing state initializations with these
+   const [selectedCollectionName, setSelectedCollectionName] = useState(CollectionName[0]);
+   const [selectedCollectionField, setSelectedCollectionField] = useState(CollectionField[0]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -125,10 +209,17 @@ export const PendingAssetStep = ({
               })}
             </Button>
           </Flex>
+
+          <UploadCollectionName value={selectedCollectionName} setValue={setSelectedCollectionName} setCollectionFields={setSelectedCollectionField} />
+          <UploadCollectionField value={selectedCollectionField} setValue={setSelectedCollectionField} collectionName={selectedCollectionName} />
+
           <KeyboardNavigable tagName="article">
             <Grid gap={4}>
               {assets.map((asset) => {
                 const assetKey = asset.url;
+
+                asset.collectionName = selectedCollectionName;
+                asset.collectionField = selectedCollectionField;
 
                 if (uploadStatus === Status.Uploading || uploadStatus === Status.Intermediate) {
                   return (
