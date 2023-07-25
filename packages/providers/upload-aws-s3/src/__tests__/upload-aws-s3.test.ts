@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import AWS from 'aws-sdk';
-import { File } from '@strapi/plugin-upload';
+import { File } from '@museumofthefuture/plugin-upload';
 import awsProvider from '../index';
 
 jest.mock('aws-sdk');

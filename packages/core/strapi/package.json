@@ -81,6 +81,7 @@
   "dependencies": {
     "@koa/cors": "3.4.3",
     "@koa/router": "10.1.1",
+    "@museumofthefuture/plugin-upload": "0.0.2",
     "@strapi/admin": "4.11.2",
     "@strapi/data-transfer": "4.11.2",
     "@strapi/database": "4.11.2",
@@ -110,6 +111,7 @@
     "glob": "7.2.0",
     "http-errors": "1.8.1",
     "https-proxy-agent": "5.0.1",
+    "husky": "8.0.3",
     "inquirer": "8.2.5",
     "is-docker": "2.2.1",
     "koa": "2.13.4",
