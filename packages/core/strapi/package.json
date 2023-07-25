@@ -81,6 +81,7 @@
   "dependencies": {
     "@koa/cors": "3.4.3",
     "@koa/router": "10.1.1",
+    "@museumofthefuture/plugin-upload": "0.0.2",
     "@strapi/admin": "4.11.2",
     "@strapi/data-transfer": "4.11.2",
     "@strapi/database": "4.11.2",

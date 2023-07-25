@@ -1,4 +1,4 @@
-import type { File } from '@strapi/plugin-upload';
+import type { File } from '@museumofthefuture/plugin-upload';
 import localProvider from '../index';
 
 jest.mock('fs', () => {

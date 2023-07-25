@@ -12,7 +12,7 @@ const INTERNAL_PLUGINS = [
   '@strapi/plugin-content-manager',
   '@strapi/plugin-content-type-builder',
   '@strapi/plugin-email',
-  '@strapi/plugin-upload',
+  '@museumofthefuture/plugin-upload',
 ];
 
 const validatePluginName = (pluginName) => {
