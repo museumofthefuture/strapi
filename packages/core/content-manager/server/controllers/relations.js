@@ -1,12 +1,13 @@
 'use strict';
 
-const { prop, isEmpty } = require('lodash/fp');
+const { prop, isEmpty, uniq } = require('lodash/fp');
 const { hasDraftAndPublish } = require('@strapi/utils').contentTypes;
 const { isAnyToMany } = require('@strapi/utils').relations;
 const { PUBLISHED_AT_ATTRIBUTE } = require('@strapi/utils').contentTypes.constants;
 
 const { getService } = require('../utils');
 const { validateFindAvailable, validateFindExisting } = require('./validation/relations');
+const { isListable } = require('../services/utils/configuration/attributes');
 
 const addFiltersClause = (params, filtersClause) => {
   params.filters = params.filters || {};
@@ -40,8 +41,6 @@ module.exports = {
 
     const isComponent = modelSchema.modelType === 'component';
 
-    // RBAC checks when it's a content-type
-    // TODO: do RBAC check for components too
     if (!isComponent) {
       const permissionChecker = getService('permission-checker').create({
         userAbility,
@@ -83,12 +82,22 @@ module.exports = {
 
     const targetedModel = strapi.getModel(attribute.target);
 
+    const permissionChecker = getService('permission-checker').create({
+      userAbility,
+      model: attribute.target,
+    });
+
     const modelConfig = isComponent
       ? await getService('components').findConfiguration(modelSchema)
       : await getService('content-types').findConfiguration(modelSchema);
-    const mainField = prop(`metadatas.${targetField}.edit.mainField`, modelConfig) || 'id';
 
-    const fieldsToSelect = ['id', mainField];
+    let mainField = prop(`metadatas.${targetField}.edit.mainField`, modelConfig) || 'id';
+
+    if (!isListable(targetedModel, mainField) || permissionChecker.cannot.read(null, mainField)) {
+      mainField = 'id';
+    }
+
+    const fieldsToSelect = uniq(['id', mainField]);
     if (hasDraftAndPublish(targetedModel)) {
       fieldsToSelect.push(PUBLISHED_AT_ATTRIBUTE);
     }
@@ -153,8 +162,6 @@ module.exports = {
 
     const isComponent = modelSchema.modelType === 'component';
 
-    // RBAC checks when it's a content-type
-    // TODO: do RBAC check for components too
     if (!isComponent) {
       const entityManager = getService('entity-manager');
       const permissionChecker = getService('permission-checker').create({
@@ -194,9 +201,17 @@ module.exports = {
       ? await getService('components').findConfiguration(modelSchema)
       : await getService('content-types').findConfiguration(modelSchema);
 
-    const mainField = prop(`metadatas.${targetField}.edit.mainField`, modelConfig) || 'id';
+    const permissionChecker = getService('permission-checker').create({
+      userAbility,
+      model: attribute.target,
+    });
 
-    const fieldsToSelect = ['id', mainField];
+    let mainField = prop(`metadatas.${targetField}.edit.mainField`, modelConfig) || 'id';
+    if (!isListable(targetedModel, mainField) || permissionChecker.cannot.read(null, mainField)) {
+      mainField = 'id';
+    }
+
+    const fieldsToSelect = uniq(['id', mainField]);
     if (hasDraftAndPublish(targetedModel)) {
       fieldsToSelect.push(PUBLISHED_AT_ATTRIBUTE);
     }

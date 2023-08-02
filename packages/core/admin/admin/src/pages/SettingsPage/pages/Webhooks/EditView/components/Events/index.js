@@ -54,8 +54,10 @@ const StyledTable = styled(Table)`
   }
 
   tbody tr td:first-child {
-    // Add padding to the start of the first column to avoid the checkbox appearing
-    // too close to the edge of the table
+    /**
+     * Add padding to the start of the first column to avoid the checkbox appearing
+     * too close to the edge of the table
+     */
     padding-inline-start: ${({ theme }) => theme.spaces[2]};
   }
 `;
@@ -306,7 +308,7 @@ const EventRow = ({ disabledEvents, name, events, inputValue, handleSelect, hand
           </Td>
         );
       })}
-      {events.length < targetColumns && <Td colSpan={`${targetColumns - events.length}`} />}
+      {events.length < targetColumns && <Td colSpan={targetColumns - events.length} />}
     </Tr>
   );
 };
